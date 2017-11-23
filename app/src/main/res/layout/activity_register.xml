@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/padding"
+        android:layout_marginTop="@dimen/largePaggind"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/nameEtRegisterWithG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding"
+            android:background="@drawable/background_of_edittext"
+            android:ems="10"
+            android:hint="Full Name ( In English )"
+            android:inputType="textPersonName"
+            android:maxLines="1"
+            android:padding="@dimen/largeMargin"
+            android:textSize="@dimen/normalTextSize" />
+
+        <EditText
+            android:id="@+id/emailEtRegisterWithG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding"
+            android:background="@drawable/background_of_edittext"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:padding="@dimen/largeMargin"
+            android:textSize="@dimen/normalTextSize" />
+
+        <EditText
+            android:id="@+id/passwordEtRegisterWithG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding"
+            android:background="@drawable/background_of_edittext"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="@dimen/largeMargin"
+            android:textSize="@dimen/normalTextSize" />
+
+        <Button
+            android:id="@+id/registerBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_of_button"
+            android:text="Submit"
+            android:layout_marginTop="@dimen/largePaggind"
+            android:textAppearance="@android:style/TextAppearance"
+            android:textColor="@color/white"
+            android:textSize="@dimen/normalTextSize"/>
+
+    </LinearLayout>
+
+</LinearLayout>

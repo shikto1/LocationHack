@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/smallBtnHeight"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/largeMargin"
+        android:text="Location Hack"
+        android:textColor="@color/white"
+        android:textSize="@dimen/mediumTextSize" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/padding">
+
+        <EditText
+            android:id="@+id/emailEtAtLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_of_edittext"
+            android:drawableLeft="@drawable/icon_mail"
+            android:drawablePadding="5dp"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:padding="@dimen/largeMargin"
+            android:textSize="@dimen/normalTextSize" />
+
+        <EditText
+            android:id="@+id/passwordETFAtLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/largeMargin"
+            android:layout_marginTop="@dimen/padding"
+            android:background="@drawable/background_of_edittext"
+            android:drawableLeft="@drawable/icon_password"
+            android:drawablePadding="@dimen/extraSmallMargin"
+            android:ems="10"
+            android:hint="@string/password"
+            android:inputType="text"
+            android:padding="@dimen/largeMargin"
+            android:textSize="@dimen/normalTextSize" />
+
+        <Button
+            android:id="@+id/loginWithEmailBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/largePaggind"
+            android:background="@color/colorPrimaryDark"
+            android:drawableRight="@drawable/icon_right_arrow"
+            android:paddingLeft="@dimen/largeMargin"
+            android:paddingRight="@dimen/largeMargin"
+            android:text="Login"
+            android:textColor="@color/white"
+            android:textSize="@dimen/smallTextSize" />
+
+        <Button
+            android:id="@+id/forgotPasswordBtnAtFG"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/largeMargin"
+            android:layout_marginTop="@dimen/padding"
+            android:text="Forgot Password ?"
+            android:textAppearance="@android:style/TextAppearance"
+            android:textColor="@color/white"
+            android:textSize="@dimen/smallTextSize" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/largeMargin"
+            android:layout_marginTop="@dimen/padding"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding"
+                android:text="New to blood+ ?"
+                android:textColor="@color/white"
+                android:textSize="@dimen/smallTextSize" />
+
+            <Button
+                android:id="@+id/registerHereBtn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding"
+                android:text="Register here"
+                android:textAppearance="@android:style/TextAppearance"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

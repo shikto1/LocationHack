@@ -1,3 +1,22 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="extralargeTextSize">40sp</dimen>
+    <dimen name="smallTextSize">16sp</dimen>
+    <dimen name="extraSmallSizeText">13sp</dimen>
+    <dimen name="normalTextSize">18sp</dimen>
+    <dimen name="mediumTextSize">20sp</dimen>
+    <dimen name="largeTextSize">24sp</dimen>
+    <dimen name="vLargeTextSize">32sp</dimen>
+
+    <dimen name="largeMargin">10dp</dimen>
+    <dimen name="smallMargin">6dp</dimen>
+    <dimen name="extraSmallMargin">4dp</dimen>
+    <dimen name="padding">16dp</dimen>
+    <dimen name="fourTeenDp">15dp</dimen>
+
+    <dimen name="smallBtnHeight">40dp</dimen>
+    <dimen name="smallBtnWidth">50dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="largePaggind">20dp</dimen>
 </resources>
