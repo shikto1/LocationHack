@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "15488169051",
+    "firebase_url": "https://locationhack-788b9.firebaseio.com",
+    "project_id": "locationhack-788b9",
+    "storage_bucket": "locationhack-788b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:15488169051:android:e9604b798642cc4b",
+        "android_client_info": {
+          "package_name": "com.example.shishir.locationhack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "15488169051-di0n0bp461947aljg76lotqq63a18nnp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shishir.locationhack",
+            "certificate_hash": "fadc82d8e4ea6f9baf483808117ebab26590435f"
+          }
+        },
+        {
+          "client_id": "15488169051-nuibpfbl006eqhlldcoarfgk8i5v2cd2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU_wE0UR1PlaMMKYG4-KRgN0K3EP95iYY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "15488169051-nuibpfbl006eqhlldcoarfgk8i5v2cd2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
