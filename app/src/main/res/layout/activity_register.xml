@@ -14,18 +14,18 @@
         android:orientation="vertical"
         >
 
-        <EditText
-            android:id="@+id/nameEtRegisterWithG"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding"
-            android:background="@drawable/background_of_edittext"
-            android:ems="10"
-            android:hint="Name"
-            android:inputType="textPersonName"
-            android:maxLines="1"
-            android:padding="@dimen/largeMargin"
-            android:textSize="@dimen/normalTextSize" />
+        <!--<EditText-->
+            <!--android:id="@+id/nameEtRegisterWithG"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="@dimen/padding"-->
+            <!--android:background="@drawable/background_of_edittext"-->
+            <!--android:ems="10"-->
+            <!--android:hint="Name"-->
+            <!--android:inputType="textPersonName"-->
+            <!--android:maxLines="1"-->
+            <!--android:padding="@dimen/largeMargin"-->
+            <!--android:textSize="@dimen/normalTextSize" />-->
 
         <EditText
             android:id="@+id/emailEtRegisterWithG"
