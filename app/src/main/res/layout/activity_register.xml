@@ -28,7 +28,7 @@
             <!--android:textSize="@dimen/normalTextSize" />-->
 
         <EditText
-            android:id="@+id/emailEtRegisterWithG"
+            android:id="@+id/emailEt_at_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding"
@@ -41,7 +41,7 @@
             android:textSize="@dimen/normalTextSize" />
 
         <EditText
-            android:id="@+id/passwordEtRegisterWithG"
+            android:id="@+id/pass_et_at_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding"
