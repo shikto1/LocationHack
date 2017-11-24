@@ -28,4 +28,11 @@ public class LocalDatabase {
     public boolean isLoggedIn() {
         return sharedPreferences.getBoolean("log", false);
     }
+
+    public void setServiceRunning(boolean running){
+        editor.putBoolean("sr",running).commit();
+    }
+    public boolean serviceIsRunning() {
+        return sharedPreferences.getBoolean("sr",false);
+    }
 }

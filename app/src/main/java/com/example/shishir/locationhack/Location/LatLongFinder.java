@@ -12,13 +12,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import com.example.shishir.locationhack.Database.DatabaseManager;
 import com.example.shishir.locationhack.Database.LocalDatabase;
+import com.example.shishir.locationhack.ExtraClass.Network;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by Shishir on 11/24/2017.
@@ -32,12 +45,18 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     Location currentLocation = null;
     FusedLocationProviderApi locationProviderApi = LocationServices.FusedLocationApi;
     LocalDatabase localDatabase;
+    Calendar calendar = Calendar.getInstance();
+    FirebaseAuth mAuth;
+    DatabaseReference databaseReference;
+    SimpleDateFormat dayFormatter = new SimpleDateFormat("dd MMM");
+    SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");// the format of your date
 
 
     @Override
     public void onCreate() {
         localDatabase = new LocalDatabase(getApplicationContext());
         setUpGoogleAPIClient();
+        mAuth = FirebaseAuth.getInstance();
         super.onCreate();
     }
 
@@ -50,7 +69,7 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
                 .build();
 
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(5 * 60 * 1000);
+        locationRequest.setInterval(2 * 60 * 1000);
         locationRequest.setFastestInterval(3 * 60 * 1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
@@ -96,7 +115,9 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     private void sendLocation(Location currentLocation) {
         double lat = currentLocation.getLatitude();
         double lng = currentLocation.getLongitude();
-        Toast.makeText(this, "Lat: " + lat + "\nLang: " + lng, Toast.LENGTH_LONG).show();
+        if (Network.isNetAvailable(this)) {
+            addLocationToFireBase(mAuth.getCurrentUser(), lat, lng);
+        }
 
         // Here I have to send location to database. If net is on. Then i wll put it to fireBase otherWise i will send it to DatabaseHelper....
     }
@@ -132,4 +153,31 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
         }
         super.onDestroy();
     }
+
+    private void addLocationToFireBase(FirebaseUser user, Double lat, Double lng) {
+        if (user != null) {
+            String dayMonth = dayFormatter.format(new Date());
+            String time = timeFormatter.format(new Date());
+            databaseReference = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child(dayMonth).child(time);
+            Toast.makeText(this, dayMonth + "\n" + "Lat: " + lat + "\nLang: " + lng, Toast.LENGTH_LONG).show();
+            //For Single Value Input.............
+            // databaseReference.child('name').setValue(name).addOnCompletionListener.............................
+
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("Lat", String.valueOf(lat));
+            map.put("Long", String.valueOf(lng));
+            databaseReference.setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if (task.isSuccessful()) {
+                        Toast.makeText(LatLongFinder.this, "Saved", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+    }
+
+
 }
