@@ -1,5 +1,7 @@
 package com.example.shishir.locationhack;
 
+import android.app.ActivityManager;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,6 +24,8 @@ import android.widget.Toast;
 import com.example.shishir.locationhack.Database.LocalDatabase;
 import com.example.shishir.locationhack.Location.LatLongFinder;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private Button startStopButton;
     private ImageButton settingBtn;
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         localDatabase = new LocalDatabase(this);
         setContentView(R.layout.activity_main);
         findViewById();
+
     }
 
 
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         serviceTv = (TextView) findViewById(R.id.service);
 
-        if (localDatabase.serviceIsRunning()) {
+        if (isMyServiceRunning(LatLongFinder.class)) {
             // startStopButton.setBackgroundResource(R.drawable.circle_button_stop);
             startStopButton.setText("STOP");
             serviceTv.setVisibility(View.VISIBLE);
@@ -83,14 +88,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopMyService() {
         stopService(new Intent(this, LatLongFinder.class));
-        localDatabase.setServiceRunning(false);
         serviceTv.setVisibility(View.INVISIBLE);
     }
 
 
     private void startMyService() {
         startService(new Intent(this, LatLongFinder.class));
-        localDatabase.setServiceRunning(true);
         serviceTv.setVisibility(View.VISIBLE);
     }
 
@@ -165,6 +168,16 @@ public class MainActivity extends AppCompatActivity {
             receiverIsRegistered = false;
         }
         super.onPause();
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -69,8 +69,8 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
                 .build();
 
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(2 * 60 * 1000);
-        locationRequest.setFastestInterval(3 * 60 * 1000);
+        locationRequest.setInterval(1 * 60 * 1000);
+        locationRequest.setFastestInterval(2 * 60 * 1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         googleApiClient.connect();
@@ -97,9 +97,9 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
             return;
         }
         currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        if (currentLocation != null) {
-            sendLocation(currentLocation);
-        }
+//        if (currentLocation != null) {
+//            sendLocation(currentLocation);
+//        }
     }
 
     @Override
@@ -124,9 +124,17 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
     @Override
     public void onLocationChanged(Location newLocation) {
+        Toast.makeText(getApplicationContext(),"called ",Toast.LENGTH_SHORT).show();
         if (newLocation != null) {
-            currentLocation = newLocation;
-            sendLocation(currentLocation);
+            if (currentLocation != null) {
+                int distance = (int) currentLocation.distanceTo(newLocation);
+                Toast.makeText(getApplicationContext(),"Distance "+distance,Toast.LENGTH_SHORT).show();
+
+                currentLocation = newLocation;
+            } else {
+                currentLocation = newLocation;
+            }
+  //          sendLocation(currentLocation);
         }
     }
 
