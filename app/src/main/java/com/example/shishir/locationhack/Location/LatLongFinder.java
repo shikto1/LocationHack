@@ -48,12 +48,14 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     Calendar calendar = Calendar.getInstance();
     FirebaseAuth mAuth;
     DatabaseReference databaseReference;
+    private static int R = 6371000;
     SimpleDateFormat dayFormatter = new SimpleDateFormat("dd MMM");
     SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");// the format of your date
 
 
     @Override
     public void onCreate() {
+        toast("Started");
         localDatabase = new LocalDatabase(getApplicationContext());
         setUpGoogleAPIClient();
         mAuth = FirebaseAuth.getInstance();
@@ -69,7 +71,7 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
                 .build();
 
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(1 * 60 * 1000);
+        locationRequest.setInterval(2 * 60 * 1000);
         locationRequest.setFastestInterval(2 * 60 * 1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
@@ -124,17 +126,25 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
     @Override
     public void onLocationChanged(Location newLocation) {
-        Toast.makeText(getApplicationContext(),"called ",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "called ", Toast.LENGTH_SHORT).show();
         if (newLocation != null) {
             if (currentLocation != null) {
-                int distance = (int) currentLocation.distanceTo(newLocation);
-                Toast.makeText(getApplicationContext(),"Distance "+distance,Toast.LENGTH_SHORT).show();
+                double lat1 = currentLocation.getLatitude();
+                double lng1 = currentLocation.getLongitude();
+                double lat2 = newLocation.getLatitude();
+                double lng2 = newLocation.getLongitude();
+                double distance1 = meterDistanceBetweenPoints(lat1, lng1, lat2, lng2);
+                double distance2 = distanceInMeter(lat1, lng1, lat2, lng2);
+                if(Network.isNetAvailable(getApplicationContext())){
+                    addLocationToFireBase(mAuth.getCurrentUser(),distance1,distance2);
+                }
+                Toast.makeText(getApplicationContext(), "Distance 1: " + distance1 + "\n" + "Distance 2: " + distance2, Toast.LENGTH_SHORT).show();
 
                 currentLocation = newLocation;
             } else {
                 currentLocation = newLocation;
             }
-  //          sendLocation(currentLocation);
+            //          sendLocation(currentLocation);
         }
     }
 
@@ -155,6 +165,7 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
     @Override
     public void onDestroy() {
+        toast("Destroyed");
         if (googleApiClient.isConnected()) {
             locationProviderApi.removeLocationUpdates(googleApiClient, this);
             googleApiClient.disconnect();
@@ -167,13 +178,13 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
             String dayMonth = dayFormatter.format(new Date());
             String time = timeFormatter.format(new Date());
             databaseReference = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child(dayMonth).child(time);
-            Toast.makeText(this, dayMonth + "\n" + "Lat: " + lat + "\nLang: " + lng, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, dayMonth + "\n" + "Dis 1: " + lat + "\nDis 2: " + lng, Toast.LENGTH_LONG).show();
             //For Single Value Input.............
             // databaseReference.child('name').setValue(name).addOnCompletionListener.............................
 
             HashMap<String, String> map = new HashMap<String, String>();
-            map.put("Lat", String.valueOf(lat));
-            map.put("Long", String.valueOf(lng));
+            map.put("Dis 1", String.valueOf(lat));
+            map.put("Dis 2", String.valueOf(lng));
             databaseReference.setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -188,4 +199,36 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     }
 
 
+    private double meterDistanceBetweenPoints(double lat_a, double lng_a, double lat_b, double lng_b) {
+        double pk = (float) (180.f / Math.PI);
+
+        double a1 = lat_a / pk;
+        double a2 = lng_a / pk;
+        double b1 = lat_b / pk;
+        double b2 = lng_b / pk;
+
+        double t1 = Math.cos(a1) * Math.cos(a2) * Math.cos(b1) * Math.cos(b2);
+        double t2 = Math.cos(a1) * Math.sin(a2) * Math.cos(b1) * Math.sin(b2);
+        double t3 = Math.sin(a1) * Math.sin(b1);
+        double tt = Math.acos(t1 + t2 + t3);
+
+        return 6366000 * tt;
+    }
+
+    public static double distanceInMeter(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c;
+    }
+
+    private void toast(String msg){
+        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+    }
 }
