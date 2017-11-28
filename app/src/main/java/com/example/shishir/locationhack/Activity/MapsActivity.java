@@ -3,6 +3,7 @@ package com.example.shishir.locationhack.Activity;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.example.shishir.locationhack.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
