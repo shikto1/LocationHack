@@ -8,9 +8,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -20,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
 
 import com.example.shishir.locationhack.Database.LocalDatabase;
 import com.example.shishir.locationhack.Location.LatLongFinder;
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static boolean receiverIsRegistered = false;
     private TextView serviceTv;
     private LocalDatabase localDatabase;
+    public static final int REQUEST_LOCATION_CODE = 99;
 
 
     @Override
@@ -68,11 +75,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Button b = (Button) v;
                 if (b.getText().equals("START")) {
-                    startStopButton.setText("STOP");
-                    // startStopButton.setBackgroundResource(R.drawable.circle_button_stop);
-                    startMyService();
-                    if (!gpsIsEnabled) {
-                        showSettingsAlert();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        checkLocationPermission();
+
+                    } else {
+                        startStopButton.setText("STOP");
+                        // startStopButton.setBackgroundResource(R.drawable.circle_button_stop);
+                        startMyService();
+                        if (!gpsIsEnabled) {
+                            showSettingsAlert();
+                        }
                     }
 
                 } else {
@@ -85,6 +97,38 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
+            }
+            return false;
+
+        } else
+            return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        startStopButton.setText("STOP");
+                        // startStopButton.setBackgroundResource(R.drawable.circle_button_stop);
+                        startMyService();
+                        if (!gpsIsEnabled) {
+                            showSettingsAlert();
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
+                }
+        }
+    }
 
     private void stopMyService() {
         stopService(new Intent(this, LatLongFinder.class));

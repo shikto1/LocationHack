@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.example.shishir.locationhack.Database.DatabaseManager;
@@ -42,7 +43,7 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
     GoogleApiClient googleApiClient;
     LocationRequest locationRequest;
-    Location currentLocation = null;
+    Location lastLocation = null;
     FusedLocationProviderApi locationProviderApi = LocationServices.FusedLocationApi;
     LocalDatabase localDatabase;
     Calendar calendar = Calendar.getInstance();
@@ -57,23 +58,20 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     public void onCreate() {
         toast("Started");
         localDatabase = new LocalDatabase(getApplicationContext());
-        setUpGoogleAPIClient();
         mAuth = FirebaseAuth.getInstance();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            setUpGoogleAPIClient();
+        }
         super.onCreate();
     }
 
-    private void setUpGoogleAPIClient() {
+    protected synchronized void setUpGoogleAPIClient() {
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(2 * 60 * 1000);
-        locationRequest.setFastestInterval(2 * 60 * 1000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         googleApiClient.connect();
     }
@@ -87,22 +85,20 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        requestLocationUp();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(2 * 60 * 1000);
+        locationRequest.setFastestInterval(2 * 60 * 1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
-        currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-//        if (currentLocation != null) {
-//            sendLocation(currentLocation);
-//        }
     }
+
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -128,40 +124,23 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     public void onLocationChanged(Location newLocation) {
         Toast.makeText(getApplicationContext(), "called ", Toast.LENGTH_SHORT).show();
         if (newLocation != null) {
-            if (currentLocation != null) {
-                double lat1 = currentLocation.getLatitude();
-                double lng1 = currentLocation.getLongitude();
+            if (lastLocation != null) {
+                double lat1 = lastLocation.getLatitude();
+                double lng1 = lastLocation.getLongitude();
                 double lat2 = newLocation.getLatitude();
                 double lng2 = newLocation.getLongitude();
                 double distance1 = meterDistanceBetweenPoints(lat1, lng1, lat2, lng2);
                 double distance2 = distanceInMeter(lat1, lng1, lat2, lng2);
-                if(Network.isNetAvailable(getApplicationContext())){
-                    addLocationToFireBase(mAuth.getCurrentUser(),distance1,distance2);
+                if (Network.isNetAvailable(getApplicationContext())) {
+                    addLocationToFireBase(mAuth.getCurrentUser(), distance1, distance2);
                 }
                 Toast.makeText(getApplicationContext(), "Distance 1: " + distance1 + "\n" + "Distance 2: " + distance2, Toast.LENGTH_SHORT).show();
-
-                currentLocation = newLocation;
+                lastLocation = newLocation;
             } else {
-                currentLocation = newLocation;
+                lastLocation = newLocation;
             }
-            //          sendLocation(currentLocation);
         }
     }
-
-    private void requestLocationUp() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationProviderApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
-
 
     @Override
     public void onDestroy() {
@@ -228,7 +207,9 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
         return R * c;
     }
 
-    private void toast(String msg){
-        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+    private void toast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
+
     }
 }
