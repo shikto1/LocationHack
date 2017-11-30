@@ -89,6 +89,7 @@ public class SeeLocationActivity extends AppCompatActivity {
                 intent.putExtra("date", dateList.get(position));
                 intent.putExtra("locList", locationList);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_from_right,R.anim.slide_to_left);
             }
         });
         super.onStart();

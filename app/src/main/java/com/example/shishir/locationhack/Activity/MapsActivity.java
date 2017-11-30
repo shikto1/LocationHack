@@ -12,6 +12,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -63,7 +64,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Double lat = Double.valueOf(singleLoc.getLat());
         Double lng = Double.valueOf(singleLoc.getLng());
         LatLng loc = new LatLng(lat, lng);
-        mMap.addMarker(new MarkerOptions().position(loc).title(singleLoc.getTime()));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(loc);
+        markerOptions.title(singleLoc.getTime());
+        mMap.addMarker(markerOptions).showInfoWindow();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right);
     }
 }
