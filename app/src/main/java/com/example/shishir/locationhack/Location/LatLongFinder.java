@@ -59,9 +59,8 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
         toast("Started");
         localDatabase = new LocalDatabase(getApplicationContext());
         mAuth = FirebaseAuth.getInstance();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            setUpGoogleAPIClient();
-        }
+        setUpGoogleAPIClient();
+
         super.onCreate();
     }
 
@@ -92,8 +91,6 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
@@ -157,7 +154,6 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
             String dayMonth = dayFormatter.format(new Date());
             String time = timeFormatter.format(new Date());
             databaseReference = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child(dayMonth).child(time);
-            Toast.makeText(this, dayMonth + "\n" + "Dis 1: " + lat + "\nDis 2: " + lng, Toast.LENGTH_LONG).show();
             //For Single Value Input.............
             // databaseReference.child('name').setValue(name).addOnCompletionListener.............................
 

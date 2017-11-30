@@ -27,13 +27,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
+import com.example.shishir.locationhack.Activity.SeeLocationActivity;
 import com.example.shishir.locationhack.Database.LocalDatabase;
 import com.example.shishir.locationhack.Location.LatLongFinder;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    private Button startStopButton;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private Button startStopButton, seeLocationBtn;
     private ImageButton settingBtn;
 
 
@@ -57,8 +58,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void findViewById() {
         startStopButton = (Button) findViewById(R.id.startStopButton);
+        seeLocationBtn=(Button)findViewById(R.id.see_location_btn);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         serviceTv = (TextView) findViewById(R.id.service);
+        seeLocationBtn.setOnClickListener(this);
 
         if (isMyServiceRunning(LatLongFinder.class)) {
             // startStopButton.setBackgroundResource(R.drawable.circle_button_stop);
@@ -224,4 +227,10 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    @Override
+    public void onClick(View v) {
+        Intent intent=new Intent(this, SeeLocationActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
 }

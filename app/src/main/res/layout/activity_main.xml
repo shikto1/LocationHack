@@ -6,6 +6,7 @@
     android:padding="@dimen/largePaggind"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorPrimary"
     android:gravity="center"
     tools:context="com.example.shishir.locationhack.MainActivity">
 
@@ -15,6 +16,13 @@
         android:layout_height="wrap_content"
         android:text="START"
         android:textSize="@dimen/normalTextSize"/>
+    <Button
+        android:id="@+id/see_location_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="See Location"
+        android:textSize="@dimen/normalTextSize"/>
+
     <TextView
         android:id="@+id/service"
         android:layout_width="match_parent"

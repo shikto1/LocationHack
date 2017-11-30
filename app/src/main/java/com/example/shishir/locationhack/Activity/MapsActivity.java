@@ -1,8 +1,11 @@
 package com.example.shishir.locationhack.Activity;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
+import com.example.shishir.locationhack.Model_Class.MyLocation;
 import com.example.shishir.locationhack.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -11,9 +14,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private String dateStr;
+    private ArrayList<MyLocation> locationList;
+    private TextView dateTv;
+    private MyLocation singleLoc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +32,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Intent intent = getIntent();
+        dateStr = intent.getStringExtra("date");
+        locationList = (ArrayList<MyLocation>) intent.getSerializableExtra("locList");
+        singleLoc = locationList.get(0);
+        findViewById();
+    }
+
+    private void findViewById() {
+        dateTv = (TextView) findViewById(R.id.dateTv_at_maps);
+        dateTv.setText(dateStr);
     }
 
 
@@ -40,8 +60,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        Double lat = Double.valueOf(singleLoc.getLat());
+        Double lng = Double.valueOf(singleLoc.getLng());
+        LatLng loc = new LatLng(lat, lng);
+        mMap.addMarker(new MarkerOptions().position(loc).title(singleLoc.getTime()));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
     }
 }
