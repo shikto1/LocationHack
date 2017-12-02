@@ -48,9 +48,10 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     LocalDatabase localDatabase;
     Calendar calendar = Calendar.getInstance();
     FirebaseAuth mAuth;
-    DatabaseReference databaseReference;
+    private DatabaseReference databaseReference;
+    private static int INTERVAL = 5 * 60 * 1000;
     private static int R = 6371000;
-    SimpleDateFormat dayFormatter = new SimpleDateFormat("dd MMM");
+    SimpleDateFormat dayFormatter = new SimpleDateFormat("dd MMMM");
     SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");// the format of your date
 
 
@@ -86,8 +87,8 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     public void onConnected(@Nullable Bundle bundle) {
 
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(5 * 60 * 1000);
-        locationRequest.setFastestInterval(5 * 60 * 1000);
+        locationRequest.setInterval(INTERVAL);
+        locationRequest.setFastestInterval(INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);

@@ -23,6 +23,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private String dateStr;
     private ArrayList<MyLocation> locationList;
+    private ArrayList<MyLocation> locListFinal = new ArrayList<>();
     private TextView dateTv;
     private MyLocation singleLoc;
 
@@ -38,7 +39,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         dateStr = intent.getStringExtra("date");
         locationList = (ArrayList<MyLocation>) intent.getSerializableExtra("locList");
-        singleLoc = locationList.get(0);
+        for (MyLocation m : locationList) {
+            if (m.getDay().equals(dateStr)) {
+                locListFinal.add(m);
+            }
+        }
         findViewById();
     }
 
@@ -61,19 +66,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        int listSize = locationList.size();
-        Toast.makeText(this,listSize+"",Toast.LENGTH_SHORT).show();
+        int listSize = locListFinal.size();
+        Toast.makeText(this, listSize + "", Toast.LENGTH_SHORT).show();
         for (int i = 0; i < listSize; i++) {
 
             // Add a marker in Sydney and move the camera
-            Double lat = Double.valueOf(locationList.get(i).getLat());
-            Double lng = Double.valueOf(locationList.get(i).getLng());
+            Double lat = Double.valueOf(locListFinal.get(i).getLat());
+            Double lng = Double.valueOf(locListFinal.get(i).getLng());
             LatLng loc = new LatLng(lat, lng);
 
 
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(loc);
-            markerOptions.title(locationList.get(i).getTime());
+            markerOptions.title(locListFinal.get(i).getTime());
             mMap.addMarker(markerOptions).showInfoWindow();
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
 
