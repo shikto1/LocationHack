@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.shishir.locationhack.Model_Class.MyLocation;
 import com.example.shishir.locationhack.R;
@@ -60,22 +61,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        Double lat = Double.valueOf(singleLoc.getLat());
-        Double lng = Double.valueOf(singleLoc.getLng());
-        LatLng loc = new LatLng(lat, lng);
+        int listSize = locationList.size();
+        Toast.makeText(this,listSize+"",Toast.LENGTH_SHORT).show();
+        for (int i = 0; i < listSize; i++) {
+
+            // Add a marker in Sydney and move the camera
+            Double lat = Double.valueOf(locationList.get(i).getLat());
+            Double lng = Double.valueOf(locationList.get(i).getLng());
+            LatLng loc = new LatLng(lat, lng);
 
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(loc);
-        markerOptions.title(singleLoc.getTime());
-        mMap.addMarker(markerOptions).showInfoWindow();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(loc);
+            markerOptions.title(locationList.get(i).getTime());
+            mMap.addMarker(markerOptions).showInfoWindow();
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+
+        }
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right);
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 }

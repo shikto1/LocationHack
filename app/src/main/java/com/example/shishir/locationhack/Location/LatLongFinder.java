@@ -43,7 +43,7 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
     GoogleApiClient googleApiClient;
     LocationRequest locationRequest;
-    Location lastLocation = null;
+    private static Location lastLocation = null;
     FusedLocationProviderApi locationProviderApi = LocationServices.FusedLocationApi;
     LocalDatabase localDatabase;
     Calendar calendar = Calendar.getInstance();
@@ -86,8 +86,8 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     public void onConnected(@Nullable Bundle bundle) {
 
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(2 * 60 * 1000);
-        locationRequest.setFastestInterval(2 * 60 * 1000);
+        locationRequest.setInterval(5 * 60 * 1000);
+        locationRequest.setFastestInterval(5 * 60 * 1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
@@ -126,14 +126,19 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
                 double lng1 = lastLocation.getLongitude();
                 double lat2 = newLocation.getLatitude();
                 double lng2 = newLocation.getLongitude();
-                double distance1 = meterDistanceBetweenPoints(lat1, lng1, lat2, lng2);
-                double distance2 = distanceInMeter(lat1, lng1, lat2, lng2);
-                if (Network.isNetAvailable(getApplicationContext())) {
-                    addLocationToFireBase(mAuth.getCurrentUser(), distance1, distance2);
-                }
-                Toast.makeText(getApplicationContext(), "Distance 1: " + distance1 + "\n" + "Distance 2: " + distance2, Toast.LENGTH_SHORT).show();
-                lastLocation = newLocation;
+                double distance = meterDistanceBetweenPoints(lat1, lng1, lat2, lng2);
+                if (distance > 3000) {
+                    if (Network.isNetAvailable(getApplicationContext())) {
+                        lastLocation = newLocation;
+                        Toast.makeText(this, "I am saving", Toast.LENGTH_SHORT).show();
+                        addLocationToFireBase(mAuth.getCurrentUser(), lat2, lng2);
+                    } else {
+                        //I will save the location in Internal SQLite Database...............
+                    }
+                } else
+                    Toast.makeText(this, "Distance is less than 3Km", Toast.LENGTH_SHORT).show();
             } else {
+                Toast.makeText(this, "Last Location is Empty !", Toast.LENGTH_SHORT).show();
                 lastLocation = newLocation;
             }
         }
@@ -158,12 +163,11 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
             // databaseReference.child('name').setValue(name).addOnCompletionListener.............................
 
             HashMap<String, String> map = new HashMap<String, String>();
-            map.put("Dis 1", String.valueOf(lat));
-            map.put("Dis 2", String.valueOf(lng));
+            map.put("Lat", String.valueOf(lat));
+            map.put("Long", String.valueOf(lng));
             databaseReference.setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-
                     if (task.isSuccessful()) {
                         Toast.makeText(LatLongFinder.this, "Saved", Toast.LENGTH_SHORT).show();
                     }
