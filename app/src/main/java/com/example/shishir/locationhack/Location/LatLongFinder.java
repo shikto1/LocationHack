@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.shishir.locationhack.Database.DatabaseManager;
 import com.example.shishir.locationhack.Database.LocalDatabase;
 import com.example.shishir.locationhack.ExtraClass.Network;
+import com.example.shishir.locationhack.Model_Class.MyLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
@@ -49,10 +50,12 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     Calendar calendar = Calendar.getInstance();
     FirebaseAuth mAuth;
     private DatabaseReference databaseReference;
-    private static int INTERVAL = 5 * 60 * 1000;
+    private static int INTERVAL = 10 * 60 * 1000;// This is the interval for checking Location.
     private static int R = 6371000;
-    SimpleDateFormat dayFormatter = new SimpleDateFormat("dd MMMM");
-    SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");// the format of your date
+    SimpleDateFormat dayFormatter = new SimpleDateFormat("dd MMMM"); //The format of Day
+    SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");// the format of Time
+
+    private DatabaseManager databaseManager;
 
 
     @Override
@@ -60,12 +63,15 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
         toast("Started");
         localDatabase = new LocalDatabase(getApplicationContext());
         mAuth = FirebaseAuth.getInstance();
+        databaseManager = new DatabaseManager(this);
         setUpGoogleAPIClient();
 
         super.onCreate();
     }
 
     protected synchronized void setUpGoogleAPIClient() {
+
+        //Making Google API Client for getting Location...............................
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -108,16 +114,6 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
     }
 
-    private void sendLocation(Location currentLocation) {
-        double lat = currentLocation.getLatitude();
-        double lng = currentLocation.getLongitude();
-        if (Network.isNetAvailable(this)) {
-            addLocationToFireBase(mAuth.getCurrentUser(), lat, lng);
-        }
-
-        // Here I have to send location to database. If net is on. Then i wll put it to fireBase otherWise i will send it to DatabaseHelper....
-    }
-
     @Override
     public void onLocationChanged(Location newLocation) {
         Toast.makeText(getApplicationContext(), "called ", Toast.LENGTH_SHORT).show();
@@ -130,11 +126,17 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
                 double distance = meterDistanceBetweenPoints(lat1, lng1, lat2, lng2);
                 if (distance > 3000) {
                     if (Network.isNetAvailable(getApplicationContext())) {
+
+                        //If There is Network Connection I will save location in Firebase Database........................................
                         lastLocation = newLocation;
                         Toast.makeText(this, "I am saving", Toast.LENGTH_SHORT).show();
                         addLocationToFireBase(mAuth.getCurrentUser(), lat2, lng2);
                     } else {
-                        //I will save the location in Internal SQLite Database...............
+
+                        //If there is no Internet Connection I Will save location in SQLite Database.....................................
+                        Date date = new Date();
+                        MyLocation location = new MyLocation(dayFormatter.format(date), timeFormatter.format(date), String.valueOf(lat2), String.valueOf(lng2));
+                        databaseManager.addLocation(location);
                     }
                 } else
                     Toast.makeText(this, "Distance is less than 3Km", Toast.LENGTH_SHORT).show();
