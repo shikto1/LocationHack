@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,14 +84,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Double lng = Double.valueOf(locListFinal.get(i).getLng());
             LatLng loc = new LatLng(lat, lng);
 
-            IconGenerator iconGenerator=new IconGenerator(this);
-            Bitmap iconBitmap=iconGenerator.makeIcon(locationList.get(i).getTime());
+            IconGenerator iconGenerator = new IconGenerator(this);
+            iconGenerator.setTextAppearance(R.style.textFace);
+            iconGenerator.setColor(ContextCompat.getColor(this,R.color.colorPrimary));
+            Bitmap iconBitmap = iconGenerator.makeIcon(locationList.get(i).getTime());
 
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(loc);
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-            markerOptions.anchor(0.5f,0.5f);
-            mMap.addMarker(markerOptions);
+            mMap.addMarker(new MarkerOptions().position(loc).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)).anchor(0.5f, 0.6f));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
 
         }
