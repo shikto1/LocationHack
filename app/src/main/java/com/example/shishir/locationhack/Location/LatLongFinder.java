@@ -2,9 +2,14 @@ package com.example.shishir.locationhack.Location;
 
 import android.Manifest;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -56,7 +61,7 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
     private static int R = 6371000;
     SimpleDateFormat dayFormatter = new SimpleDateFormat("dd MMMM"); //The format of Day
     SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");// the format of Time
-
+    private static boolean networkRecReg = false;
     private DatabaseManager databaseManager;
 
 
@@ -67,7 +72,10 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
         mAuth = FirebaseAuth.getInstance();
         databaseManager = new DatabaseManager(this);
         setUpGoogleAPIClient();
-
+        if (!networkRecReg) {
+            registerReceiver(networkStateReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+            networkRecReg = true;
+        }
         super.onCreate();
     }
 
@@ -126,7 +134,8 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
                 double lat2 = newLocation.getLatitude();
                 double lng2 = newLocation.getLongitude();
                 double distance = meterDistanceBetweenPoints(lat1, lng1, lat2, lng2);
-                double distanceInM=SphericalUtil.computeDistanceBetween(new LatLng(lat1,lng1),new LatLng(lat2,lng2));
+                double distanceInM = SphericalUtil.computeDistanceBetween(new LatLng(lat1, lng1), new LatLng(lat2, lng2));
+                Toast.makeText(this, "" + distanceInM, Toast.LENGTH_SHORT).show();
                 if (distance > 3000) {
                     if (Network.isNetAvailable(getApplicationContext())) {
 
@@ -156,6 +165,10 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
         if (googleApiClient.isConnected()) {
             locationProviderApi.removeLocationUpdates(googleApiClient, this);
             googleApiClient.disconnect();
+            if (networkRecReg) {
+                networkRecReg = false;
+                unregisterReceiver(networkStateReceiver);
+            }
         }
         super.onDestroy();
     }
@@ -218,4 +231,22 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
 
 
     }
+
+    BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager
+                    .getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                //Connected....................
+                Toast.makeText(LatLongFinder.this, "Connected", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(LatLongFinder.this, "Disconnected", Toast.LENGTH_SHORT).show();
+                //No connection................
+            }
+        }
+    };
+
 }
