@@ -1,6 +1,11 @@
 package com.example.shishir.locationhack.Activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -12,9 +17,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.BubbleIconFactory;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
 
@@ -75,11 +83,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Double lng = Double.valueOf(locListFinal.get(i).getLng());
             LatLng loc = new LatLng(lat, lng);
 
+            IconGenerator iconGenerator=new IconGenerator(this);
+            Bitmap iconBitmap=iconGenerator.makeIcon(locationList.get(i).getTime());
 
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(loc);
-            markerOptions.title(locListFinal.get(i).getTime());
-            mMap.addMarker(markerOptions).showInfoWindow();
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+            markerOptions.anchor(0.5f,0.5f);
+            mMap.addMarker(markerOptions);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
 
         }

@@ -23,12 +23,14 @@ import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.maps.android.SphericalUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -124,6 +126,7 @@ public class LatLongFinder extends Service implements GoogleApiClient.Connection
                 double lat2 = newLocation.getLatitude();
                 double lng2 = newLocation.getLongitude();
                 double distance = meterDistanceBetweenPoints(lat1, lng1, lat2, lng2);
+                double distanceInM=SphericalUtil.computeDistanceBetween(new LatLng(lat1,lng1),new LatLng(lat2,lng2));
                 if (distance > 3000) {
                     if (Network.isNetAvailable(getApplicationContext())) {
 
